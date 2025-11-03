@@ -291,85 +291,87 @@ export class CardManager {
 		})
 	}
 
-	/**
-	 * 使所有卡片散开
-	 */
-	scatterCards() {
-		const cards = document.querySelectorAll('.card')
-		if (cards.length === 0) return
+/**
+ * 使所有卡片散开
+ */
+scatterCards() {
+    const cards = document.querySelectorAll('.card')
+    if (cards.length === 0) return
 
-		// 获取计算布局几何参数，与随机生成位置使用相同的参数
-		const { cardWidth, cardHeight, horizontalMargin, verticalMargin } = this.computeLayoutGeometry()
+    // 获取计算布局几何参数，与随机生成位置使用相同的参数
+    const { cardWidth, cardHeight, horizontalMargin, verticalMargin } = this.computeLayoutGeometry()
 
-		// 为了确保所有卡片同时开始动画，我们使用requestAnimationFrame
-		requestAnimationFrame(() => {
-			cards.forEach((card) => {
-				const state = stateManager.getCardState(card)
-				if (!state || state.maximized || state.closing) return
+    // 为了确保所有卡片同时开始动画，我们使用requestAnimationFrame
+    requestAnimationFrame(() => {
+        cards.forEach((card) => {
+            const state = stateManager.getCardState(card)
+            if (!state || state.maximized || state.closing) return
 
-				// 设置散开动画持续时间
-				card.style.transition = `left ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, top ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, transform ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out`
+            // 设置散开动画持续时间
+            card.style.transition = `left ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, top ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, transform ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out`
 
-				// 参考createCard方法中的随机生成位置的公式
-				const left = 
-					horizontalMargin + 
-					Math.random() * 
-						Math.max(window.innerWidth - cardWidth - horizontalMargin * 2, 0)
-				const top = 
-					verticalMargin + 
-					Math.random() * 
-						Math.max(window.innerHeight - cardHeight - verticalMargin * 2, 0)
-				const randomAngle = (Math.random() - 0.5) * 45 // -22.5到22.5度的随机角度
+            // 参考createCard方法中的随机生成位置的公式
+            const left = 
+                horizontalMargin + 
+                Math.random() * 
+                    Math.max(window.innerWidth - cardWidth - horizontalMargin * 2, 0)
+            const top = 
+                verticalMargin + 
+                Math.random() * 
+                    Math.max(window.innerHeight - cardHeight - verticalMargin * 2, 0)
+            
+            // 不设置随机角度，保持水平状态
+            const angle = 0
 
-				// 保存散开前的状态，便于后续可能的重新布局
-				stateManager.updateCardState(card, {
-					beforeScatter: {
-						left: state.left,
-						top: state.top,
-						angle: state.angle
-					}
-				})
+            // 保存散开前的状态，便于后续可能的重新布局
+            stateManager.updateCardState(card, {
+                beforeScatter: {
+                    left: state.left,
+                    top: state.top,
+                    angle: state.angle
+                }
+            })
 
-				// 直接应用动画，所有卡片同时开始移动
-				const scatterState = stateManager.getCardState(card)
-				if (scatterState && !scatterState.closing) {
-					card.style.left = `${left}px`
-					card.style.top = `${top}px`
-					
-					applyTransform(card, {
-						scale: CONFIG.SCALE.NORMAL,
-						rotate: randomAngle
-					})
+            // 直接应用动画，所有卡片同时开始移动
+            const scatterState = stateManager.getCardState(card)
+            if (scatterState && !scatterState.closing) {
+                card.style.left = `${left}px`
+                card.style.top = `${top}px`
+                
+                applyTransform(card, {
+                    scale: CONFIG.SCALE.NORMAL,
+                    rotate: angle
+                })
 
-					stateManager.updateCardState(card, {
-						left: left,
-						top: top,
-						angle: randomAngle,
-						lastPosition: { left: left, top: top }
-					})
-				}
-			})
-		})
-		
-		// 设置定时器，在指定时间后让卡片回到原来的爱心形状
-		setTimeout(() => {
-			// 先设置回到动画的过渡效果
-			cards.forEach((card) => {
-				card.style.transition = `left ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, top ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, transform ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out`
-			});
-			
-			// 调用relayoutCards方法让卡片回到爱心形状
-			this.relayoutCards();
-			
-			// 动画完成后清除过渡样式，避免影响后续交互
-			setTimeout(() => {
-				cards.forEach((card) => {
-					card.style.transition = '';
-				});
-			}, CONFIG.ANIMATION.SCATTER_DURATION);
-		}, CONFIG.ANIMATION.SCATTER_HOLD_TIME);
-	}
-	
+                stateManager.updateCardState(card, {
+                    left: left,
+                    top: top,
+                    angle: angle,
+                    lastPosition: { left: left, top: top }
+                })
+            }
+        })
+    })
+    
+    // 设置定时器，在指定时间后让卡片回到原来的爱心形状
+    setTimeout(() => {
+        // 先设置回到动画的过渡效果
+        cards.forEach((card) => {
+            card.style.transition = `left ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, top ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, transform ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out`
+        });
+        
+        // 调用relayoutCards方法让卡片回到爱心形状
+        this.relayoutCards();
+        
+        // 动画完成后清除过渡样式，避免影响后续交互
+        setTimeout(() => {
+            cards.forEach((card) => {
+                card.style.transition = '';
+            });
+        }, CONFIG.ANIMATION.SCATTER_DURATION);
+    }, CONFIG.ANIMATION.SCATTER_HOLD_TIME);
+}
+
 	/**
 	 * 开始拖拽（修复：支持触摸拖拽）
 	 * @param {PointerEvent} event - 指针事件

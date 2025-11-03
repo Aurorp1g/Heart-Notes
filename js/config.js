@@ -123,7 +123,7 @@ export const CONFIG = {
 		SPAWN_INTERVAL_MOBILE: 180, 
 		RESIZE_DEBOUNCE: 300, // 窗口调整防抖时间
 		SCATTER_DURATION: 1500, // 卡片散开动画时长
-		SCATTER_HOLD_TIME: 5000 // 卡片散开后保持时间
+		SCATTER_HOLD_TIME: 9000 // 卡片散开后保持时间
 	},
 
 	// 卡片数量限制
