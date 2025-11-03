@@ -290,6 +290,7 @@ export class CardManager {
 			stateManager.bringToFront(card)
 		})
 	}
+
 	/**
 	 * 使所有卡片散开
 	 */
@@ -349,7 +350,26 @@ export class CardManager {
 				}
 			})
 		})
+		
+		// 设置定时器，在指定时间后让卡片回到原来的爱心形状
+		setTimeout(() => {
+			// 先设置回到动画的过渡效果
+			cards.forEach((card) => {
+				card.style.transition = `left ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, top ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out, transform ${CONFIG.ANIMATION.SCATTER_DURATION}ms ease-out`
+			});
+			
+			// 调用relayoutCards方法让卡片回到爱心形状
+			this.relayoutCards();
+			
+			// 动画完成后清除过渡样式，避免影响后续交互
+			setTimeout(() => {
+				cards.forEach((card) => {
+					card.style.transition = '';
+				});
+			}, CONFIG.ANIMATION.SCATTER_DURATION);
+		}, CONFIG.ANIMATION.SCATTER_HOLD_TIME);
 	}
+	
 	/**
 	 * 开始拖拽（修复：支持触摸拖拽）
 	 * @param {PointerEvent} event - 指针事件
