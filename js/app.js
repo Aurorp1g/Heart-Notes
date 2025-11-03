@@ -252,6 +252,13 @@ class App {
 					if (this.particleEffect) {
 						this.particleEffect.showHeartParticles()
 					}
+					
+					// 粒子效果显示后，延迟一段时间再让卡片散开
+					setTimeout(() => {
+						if (this.cardManager) {
+							this.cardManager.scatterCards()
+						}
+					}, 8000) // 8秒后卡片开始散开
 				}, 500)
 			}
 		}

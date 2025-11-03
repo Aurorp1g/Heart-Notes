@@ -121,13 +121,14 @@ export const CONFIG = {
 		INITIAL_SPAWN_DELAY_MOBILE: 30,
 		SPAWN_INTERVAL_DESKTOP: 250, 
 		SPAWN_INTERVAL_MOBILE: 180, 
-		RESIZE_DEBOUNCE: 300
+		RESIZE_DEBOUNCE: 300, // 窗口调整防抖时间
+		SCATTER_DURATION: 1500, // 卡片散开动画时长
 	},
 
 	// 卡片数量限制
 	LIMITS: {
-		MAX_CARDS_DESKTOP: 192, // 增加到192个以形成更大的爱心
-		MAX_CARDS_MOBILE: 192,
+		MAX_CARDS_DESKTOP: 99, // 增加到99个以形成更大的爱心
+		MAX_CARDS_MOBILE: 99,
 		INITIAL_CARDS_DESKTOP: 0, // 爱心形状通过自动生成逐步形成
 		INITIAL_CARDS_MOBILE: 0
 	},
@@ -191,7 +192,7 @@ export const CONFIG = {
 		// 使用归一化坐标 [0, 1]，将在实际使用时根据屏幕大小缩放
 		getHeartPositions: () => {
 			const rawPositions = []
-			const numPoints = 192 // 增加到192个点（约15%增量）
+			const numPoints = 99 // 增加到99个点（约15%增量）
 
 			let minX = Infinity, maxX = -Infinity
 			let minY = Infinity, maxY = -Infinity
